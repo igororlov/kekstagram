@@ -1,7 +1,7 @@
 # Личный проект «Кекстаграм» [![Build status][travis-image]][travis-url] [![Dependency status][dependency-image]][dependency-url]
 
 * Студент: [Igor Orlov](https://up.htmlacademy.ru/javascript/7/user/183831).
-* Наставник: `Неизвестно`.
+* Наставник: [Igor Antonov](https://htmlacademy.ru/profile/id3162).
 
 ---
 
