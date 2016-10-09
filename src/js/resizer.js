@@ -106,6 +106,7 @@
 
       var displX = -(this._resizeConstraint.x + this._resizeConstraint.side / 2);
       var displY = -(this._resizeConstraint.y + this._resizeConstraint.side / 2);
+
       // Отрисовка изображения на холсте. Параметры задают изображение, которое
       // нужно отрисовать и координаты его верхнего левого угла.
       // Координаты задаются от центра холста.
@@ -113,11 +114,46 @@
 
       // Отрисовка прямоугольника, обозначающего область изображения после
       // кадрирования. Координаты задаются от центра.
-      this._ctx.strokeRect(
-          (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
-          (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
-          this._resizeConstraint.side - this._ctx.lineWidth / 2,
-          this._resizeConstraint.side - this._ctx.lineWidth / 2);
+      var cropX = (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2;
+      var cropY = (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2;
+      var cropSide = this._resizeConstraint.side - this._ctx.lineWidth / 2;
+      this._ctx.strokeRect(cropX, cropY, cropSide, cropSide);
+
+      // Task 1 - add shadow
+      this._ctx.beginPath();
+
+      // Add an outer poligon, must be clockwise
+      var imageWidth = this._image.width;
+      var imageHeight = this._image.height;
+      this._ctx.moveTo(displX, displY);
+      this._ctx.lineTo(displX + imageWidth, displY);
+      this._ctx.lineTo(displX + imageWidth, displY + imageHeight);
+      this._ctx.lineTo(displX, displY + imageHeight);
+      this._ctx.lineTo(displX, displY);
+      this._ctx.closePath();
+
+      // Add a hole (inner poligon), must be counter-clockwise
+      this._ctx.moveTo(cropX, cropY);
+      this._ctx.lineTo(cropX, cropY + cropSide);
+      this._ctx.lineTo(cropX + cropSide, cropY + cropSide);
+      this._ctx.lineTo(cropX + cropSide, cropY);
+      this._ctx.lineTo(cropX, cropY);
+      this._ctx.closePath();
+
+      this._ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+      this._ctx.fill();
+
+      // Task 2 - add image size
+      var naturalWidth = this._image.naturalWidth;
+      var naturalHeight = this._image.naturalHeight;
+
+      this._ctx.font = '16px Arial';
+      this._ctx.fillStyle = '#ffffff';
+      this._ctx.textAlign = 'center';
+      var textContent = naturalWidth + ' x ' + naturalHeight;
+      var textPositionX = 0; // due to using center aligns
+      var textPositionY = -1 * (10 + this._resizeConstraint.side / 2); // 10 pixels above the line
+      this._ctx.fillText(textContent, textPositionX, textPositionY);
 
       // Восстановление состояния канваса, которое было до вызова ctx.save
       // и последующего изменения системы координат. Нужно для того, чтобы
