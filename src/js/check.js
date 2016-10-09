@@ -1,3 +1,5 @@
+'use strict';
+
 function getMessage(a, b) {
   var result;
   if (typeof a === "boolean") {
@@ -10,9 +12,9 @@ function getMessage(a, b) {
     result = "Переданное SVG-изображение содержит [a] объектов и [b * 4] атрибутов".replace("[a]", a).replace("[b * 4]", b*4);
   } else if (Array.isArray(a)) {
     if (!Array.isArray(b)) {
-      result = "Количество красных точек во всех строчках изображения: [amountOfRedPoints]".replace("[amountOfRedPoints]", arraySum(a));
+      result = "Количество красных точек во всех строчках изображения: [amountOfRedPoints]".replace("[amountOfRedPoints]", getArraySum(a));
     } else {
-      result = "Общая площадь артефактов сжатия: [artifactsSquare] пикселей".replace("[artifactsSquare]", dotProduct(a, b));
+      result = "Общая площадь артефактов сжатия: [artifactsSquare] пикселей".replace("[artifactsSquare]", getDotProduct(a, b));
     }
   } else {
     result = "Переданы некорректные данные";
@@ -20,11 +22,11 @@ function getMessage(a, b) {
   return result;
 }
 
-function arraySum(a) {
+function getArraySum(a) {
   return a.reduce(function(a, b) { return a + b; }, 0);
 }
 
-function dotProduct(a, b) {
+function getDotProduct(a, b) {
   var result = 0;
   for (var i = 0; i < a.length; i++) {
     result += a[i] * b[i];
