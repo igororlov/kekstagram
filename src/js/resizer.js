@@ -123,37 +123,36 @@
       this._ctx.beginPath();
 
       // Add an outer poligon, must be clockwise
-      var displSide = this._resizeConstraint.side;
       var imageWidth = this._image.width;
       var imageHeight = this._image.height;
       this._ctx.moveTo(displX, displY);
-      this._ctx.lineTo(displX+imageWidth, displY);
-      this._ctx.lineTo(displX+imageWidth, displY+imageHeight);
-      this._ctx.lineTo(displX, displY+imageHeight);
+      this._ctx.lineTo(displX + imageWidth, displY);
+      this._ctx.lineTo(displX + imageWidth, displY + imageHeight);
+      this._ctx.lineTo(displX, displY + imageHeight);
       this._ctx.lineTo(displX, displY);
       this._ctx.closePath();
 
       // Add a hole (inner poligon), must be counter-clockwise
       this._ctx.moveTo(cropX, cropY);
-      this._ctx.lineTo(cropX, cropY+cropSide);
-      this._ctx.lineTo(cropX+cropSide, cropY+cropSide);
-      this._ctx.lineTo(cropX+cropSide, cropY);
+      this._ctx.lineTo(cropX, cropY + cropSide);
+      this._ctx.lineTo(cropX + cropSide, cropY + cropSide);
+      this._ctx.lineTo(cropX + cropSide, cropY);
       this._ctx.lineTo(cropX, cropY);
       this._ctx.closePath();
 
-      this._ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
+      this._ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
       this._ctx.fill();
 
       // Task 2 - add image size
       var naturalWidth = this._image.naturalWidth;
       var naturalHeight = this._image.naturalHeight;
 
-      this._ctx.font = "16px Arial";
-      this._ctx.fillStyle = "#ffffff";
-      this._ctx.textAlign = "center";
-      var textContent = naturalWidth + " x " + naturalHeight;
-      var textPositionX = 0; // due to using center
-      var textPositionY = - (10 + this._resizeConstraint.side / 2); // 10 pixels above the line
+      this._ctx.font = '16px Arial';
+      this._ctx.fillStyle = '#ffffff';
+      this._ctx.textAlign = 'center';
+      var textContent = naturalWidth + ' x ' + naturalHeight;
+      var textPositionX = 0; // due to using center aligns
+      var textPositionY = -1 * (10 + this._resizeConstraint.side / 2); // 10 pixels above the line
       this._ctx.fillText(textContent, textPositionX, textPositionY);
 
       // Восстановление состояния канваса, которое было до вызова ctx.save
