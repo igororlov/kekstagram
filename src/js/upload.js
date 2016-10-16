@@ -67,12 +67,43 @@
     backgroundElement.style.backgroundImage = 'url(' + images[randomImageNumber] + ')';
   };
 
+  /*
+  * Объявить поля ввода формы.
+  */
+  var resizeInputX = document.getElementById('resize-x');
+  var resizeInputY = document.getElementById('resize-y');
+  var resizeInputSize = document.getElementById('resize-size');
+
+  /*
+  * Обновляет атрибут disabled у кнопки отправки формы в зависимости от её валидности.
+  */
+  function toggleResizeFormSubmit() {
+    document.getElementById('resize-fwd').disabled = !resizeFormIsValid();
+  }
+
+  resizeInputX.onchange = toggleResizeFormSubmit;
+  resizeInputX.oninput = toggleResizeFormSubmit;
+  resizeInputY.onchange = toggleResizeFormSubmit;
+  resizeInputY.oninput = toggleResizeFormSubmit;
+  resizeInputSize.onchange = toggleResizeFormSubmit;
+  resizeInputSize.oninput = toggleResizeFormSubmit;
+
   /**
    * Проверяет, валидны ли данные, в форме кадрирования.
    * @return {boolean}
    */
   var resizeFormIsValid = function() {
-    return true;
+    var imWidth = currentResizer._image.naturalWidth;
+    var imHeight = currentResizer._image.naturalHeight;
+    var resizeX = 1 * resizeInputX.value;
+    var resizeY = 1 * resizeInputY.value;
+    var resizeSize = 1 * resizeInputSize.value;
+    var isValid = (resizeX + resizeSize <= imWidth) &&
+      (resizeY + resizeSize <= imHeight) && (resizeX >= 0) && (resizeY >= 0);
+
+    document.getElementById('resize-fwd').disabled = !isValid;
+
+    return isValid;
   };
 
   /**
