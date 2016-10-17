@@ -67,26 +67,19 @@
     backgroundElement.style.backgroundImage = 'url(' + images[randomImageNumber] + ')';
   };
 
-  /*
-  * Объявить поля ввода формы.
-  */
-  var resizeInputX = document.getElementById('resize-x');
-  var resizeInputY = document.getElementById('resize-y');
-  var resizeInputSize = document.getElementById('resize-size');
+  /**
+   * Кнопка "Продолжить".
+   */
+  var resizeForwardBtn = document.getElementById('resize-fwd');
 
   /*
   * Обновляет атрибут disabled у кнопки отправки формы в зависимости от её валидности.
   */
   function toggleResizeFormSubmit() {
-    document.getElementById('resize-fwd').disabled = !resizeFormIsValid();
+    resizeForwardBtn.disabled = !resizeFormIsValid();
   }
 
-  resizeInputX.onchange = toggleResizeFormSubmit;
-  resizeInputX.oninput = toggleResizeFormSubmit;
-  resizeInputY.onchange = toggleResizeFormSubmit;
-  resizeInputY.oninput = toggleResizeFormSubmit;
-  resizeInputSize.onchange = toggleResizeFormSubmit;
-  resizeInputSize.oninput = toggleResizeFormSubmit;
+
 
   /**
    * Проверяет, валидны ли данные, в форме кадрирования.
@@ -101,7 +94,7 @@
     var isValid = (resizeX + resizeSize <= imWidth) &&
       (resizeY + resizeSize <= imHeight) && (resizeX >= 0) && (resizeY >= 0);
 
-    document.getElementById('resize-fwd').disabled = !isValid;
+    resizeForwardBtn.disabled = !isValid;
 
     return isValid;
   };
@@ -133,6 +126,17 @@
    * @type {HTMLElement}
    */
   var uploadMessage = document.querySelector('.upload-message');
+
+  /**
+   * Объявить поля ввода формы.
+   */
+  var resizeInputX = resizeForm.elements.x;
+  var resizeInputY = resizeForm.elements.y;
+  var resizeInputSize = resizeForm.elements.size;
+
+  resizeInputX.oninput = toggleResizeFormSubmit;
+  resizeInputY.oninput = toggleResizeFormSubmit;
+  resizeInputSize.oninput = toggleResizeFormSubmit;
 
   /**
    * @param {Action} action
