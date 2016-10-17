@@ -247,12 +247,12 @@
     var currentYear = new Date().getFullYear();
     var birthdayThisYear = new Date(currentYear + '-12-09');
     var today = new Date();
-    today.setHours(0,0,0,0);
+    today.setHours(0, 0, 0, 0);
     var birthday;
     if (birthdayThisYear < today) {
       birthday = birthdayThisYear;
     } else {
-      birthday = birthdayThisYear.setYear(currentYear-1);
+      birthday = birthdayThisYear.setYear(currentYear - 1);
     }
     return Math.floor((today - birthday) / 86400000) + 1;
   }
@@ -287,7 +287,7 @@
       return item.checked;
     })[0].value;
     return selectedFilter;
-  };
+  }
 
   cleanupResizer();
   updateBackground();
