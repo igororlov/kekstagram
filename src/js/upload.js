@@ -1,4 +1,5 @@
 /* global Resizer: true */
+/* global Cookies: true */
 
 /**
  * @fileoverview
@@ -245,7 +246,7 @@
 
   function getDaysSinceGraceHoppersBirthday() {
     var currentYear = new Date().getFullYear();
-    var birthdayThisYear = new Date(currentYear + '-12-09');
+    var birthdayThisYear = new Date(currentYear, 11, 9);
     var today = new Date();
     today.setHours(0, 0, 0, 0);
     var birthday;
