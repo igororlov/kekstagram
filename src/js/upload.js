@@ -1,4 +1,5 @@
 /* global Resizer: true */
+/* global Cookies: true */
 
 /**
  * @fileoverview
@@ -8,6 +9,7 @@
 'use strict';
 
 (function() {
+
   /** @enum {string} */
   var FileType = {
     'GIF': '',
@@ -215,6 +217,11 @@
   filterForm.onreset = function(evt) {
     evt.preventDefault();
 
+    var selectedFilter = Cookies.get('upload-filter');
+    if (selectedFilter) {
+      filterImage.className = 'filter-image-preview ' + filterMap[selectedFilter];
+    }
+
     filterForm.classList.add('invisible');
     resizeForm.classList.remove('invisible');
   };
@@ -227,12 +234,29 @@
   filterForm.onsubmit = function(evt) {
     evt.preventDefault();
 
+    var selectedFilter = getSelectedFilter();
+    Cookies.set('upload-filter', selectedFilter, { expires: getDaysSinceGraceHoppersBirthday() });
+
     cleanupResizer();
     updateBackground();
 
     filterForm.classList.add('invisible');
     uploadForm.classList.remove('invisible');
   };
+
+  function getDaysSinceGraceHoppersBirthday() {
+    var currentYear = new Date().getFullYear();
+    var birthdayThisYear = new Date(currentYear, 11, 9);
+    var today = new Date();
+    today.setHours(0, 0, 0, 0);
+    var birthday;
+    if (birthdayThisYear < today) {
+      birthday = birthdayThisYear;
+    } else {
+      birthday = birthdayThisYear.setYear(currentYear - 1);
+    }
+    return Math.floor((today - birthday) / 86400000) + 1;
+  }
 
   /**
    * Обработчик изменения фильтра. Добавляет класс из filterMap соответствующий
@@ -251,15 +275,20 @@
       };
     }
 
-    var selectedFilter = [].filter.call(filterForm['upload-filter'], function(item) {
-      return item.checked;
-    })[0].value;
+    var selectedFilter = getSelectedFilter();
 
     // Класс перезаписывается, а не обновляется через classList потому что нужно
     // убрать предыдущий примененный класс. Для этого нужно или запоминать его
     // состояние или просто перезаписывать.
     filterImage.className = 'filter-image-preview ' + filterMap[selectedFilter];
   };
+
+  function getSelectedFilter() {
+    var selectedFilter = [].filter.call(filterForm['upload-filter'], function(item) {
+      return item.checked;
+    })[0].value;
+    return selectedFilter;
+  }
 
   cleanupResizer();
   updateBackground();
