@@ -70,11 +70,35 @@
   };
 
   /**
+   * Кнопка "Продолжить".
+   */
+  var resizeForwardBtn = document.getElementById('resize-fwd');
+
+  /*
+  * Обновляет атрибут disabled у кнопки отправки формы в зависимости от её валидности.
+  */
+  function toggleResizeFormSubmit() {
+    resizeForwardBtn.disabled = !resizeFormIsValid();
+  }
+
+
+
+  /**
    * Проверяет, валидны ли данные, в форме кадрирования.
    * @return {boolean}
    */
   var resizeFormIsValid = function() {
-    return true;
+    var imWidth = currentResizer._image.naturalWidth;
+    var imHeight = currentResizer._image.naturalHeight;
+    var resizeX = 1 * resizeInputX.value;
+    var resizeY = 1 * resizeInputY.value;
+    var resizeSize = 1 * resizeInputSize.value;
+    var isValid = (resizeX + resizeSize <= imWidth) &&
+      (resizeY + resizeSize <= imHeight) && (resizeX >= 0) && (resizeY >= 0);
+
+    resizeForwardBtn.disabled = !isValid;
+
+    return isValid;
   };
 
   /**
@@ -104,6 +128,17 @@
    * @type {HTMLElement}
    */
   var uploadMessage = document.querySelector('.upload-message');
+
+  /**
+   * Объявить поля ввода формы.
+   */
+  var resizeInputX = resizeForm.elements.x;
+  var resizeInputY = resizeForm.elements.y;
+  var resizeInputSize = resizeForm.elements.size;
+
+  resizeInputX.oninput = toggleResizeFormSubmit;
+  resizeInputY.oninput = toggleResizeFormSubmit;
+  resizeInputSize.oninput = toggleResizeFormSubmit;
 
   /**
    * @param {Action} action
