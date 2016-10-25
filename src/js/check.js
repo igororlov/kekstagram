@@ -1,5 +1,7 @@
 'use strict';
 
+console.log(getMessage(true, 1));
+
 function getMessage(a, b) {
   var result;
   if (typeof a === 'boolean') {
