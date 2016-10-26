@@ -7,7 +7,6 @@
 
 (function() {
 
-
   var PICTURES_URL = 'http://localhost:1507/api/pictures';
 
   var load = function(url, callback) {
