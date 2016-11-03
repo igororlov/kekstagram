@@ -1,7 +1,10 @@
 'use strict';
 
-module.exports = function(url, callback) {
-  var callbackName = 'cb' + Date.now();
+var getDataViaJSONP = function(url, callback, callbackName) {
+
+  if (!callbackName) {
+    callbackName = 'cb' + Date.now();
+  }
 
   window[callbackName] = function(data) {
     callback(data);
@@ -11,3 +14,5 @@ module.exports = function(url, callback) {
   script.src = url + '?callback=' + callbackName;
   document.body.appendChild(script);
 }
+
+module.exports = getDataViaJSONP;
