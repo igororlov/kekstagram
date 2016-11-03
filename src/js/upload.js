@@ -8,8 +8,6 @@
 
 'use strict';
 
-var Resizer = require('./resizer');
-
 /** @enum {string} */
 var FileType = {
   'GIF': '',
@@ -325,5 +323,9 @@ function getSelectedFilter() {
   return selectedFilter;
 }
 
-cleanupResizer();
-updateBackground();
+function initUpload() {
+  cleanupResizer();
+  updateBackground();
+}
+
+module.exports = initUpload;

@@ -2,6 +2,7 @@
 
 var load = require('./load');
 var drawPictures = require('./pictures');
-var upload = require('./upload');
+var initUpload = require('./upload');
 
+initUpload();
 load('http://localhost:1507/api/pictures', drawPictures, '__jsonpCallback');
