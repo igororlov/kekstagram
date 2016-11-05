@@ -5,11 +5,13 @@
 
 'use strict';
 
+var gallery = require('./gallery');
+
 // Создаёт для каждой записи массива pictures блок фотографии на основе шаблона #picture-template.
 var pictureTemplate = document.getElementById('picture-template');
 var templateContainer = 'content' in pictureTemplate ? pictureTemplate.content : pictureTemplate;
 
-function getPictureElement(picture) {
+function getPictureElement(picture, index) {
   var pictureElement = templateContainer.querySelector('.picture').cloneNode(true);
 
   // Значение поля likes внутрь блока .picture-likes
@@ -30,6 +32,12 @@ function getPictureElement(picture) {
   // Обработчик ошибки: добавьте блоку фотографии .picture класс picture-load-failure.
   pictureImage.onerror = function() {
     pictureElement.classList.add('picture-load-failure');
+  };
+  // Обработчик клика - показать изображение
+  pictureElement.onclick = function(evt) {
+    evt.preventDefault();
+    gallery.show(index);
+    return false;
   };
 
   pictureImage.src = picture.url;
