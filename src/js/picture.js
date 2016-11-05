@@ -37,7 +37,7 @@ var Picture = function(data, index) {
   // Обработчик клика - показать изображение
   this.element.onclick = function(evt) {
     self.handleClick(evt, index);
-  }
+  };
   this.pictureImage.src = data.url;
 };
 
