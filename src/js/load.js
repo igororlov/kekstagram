@@ -1,18 +1,23 @@
 'use strict';
 
-var getDataViaJSONP = function(url, callback, callbackName) {
-
-  if (!callbackName) {
-    callbackName = 'cb' + Date.now();
+var filterToParams = function(filterObj) {
+  var params = [];
+  for (var key in filterObj) {
+    params.push(key + '=' + filterObj[key]);
   }
-
-  window[callbackName] = function(data) {
-    callback(data);
-  };
-
-  var script = document.createElement('script');
-  script.src = url + '?callback=' + callbackName;
-  document.body.appendChild(script);
+  return '?' + params.join('&');
 };
 
-module.exports = getDataViaJSONP;
+var load = function(url, filterObj, callback) {
+  var xhr = new XMLHttpRequest();
+  var fullUrl = url + filterToParams(filterObj);
+
+  xhr.onload = function(evt) {
+    var loadedData = JSON.parse(evt.target.response);
+    callback(loadedData);
+  };
+  xhr.open('GET', fullUrl, true);
+  xhr.send();
+};
+
+module.exports = load;
