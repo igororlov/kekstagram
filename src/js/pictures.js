@@ -5,7 +5,7 @@
 
 'use strict';
 
-var getPicture = require('./picture');
+var Picture = require('./picture');
 var gallery = require('./gallery');
 
 var filters = document.querySelector('.filters');
@@ -18,8 +18,8 @@ function renderPicturesList(data) {
   filters.classList.add('hidden');
 
   data.forEach(function(picture, index) {
-    var pictureElement = getPicture(picture, index);
-    picturesBlock.appendChild(pictureElement);
+    var pictureObj = new Picture(picture, index);
+    picturesBlock.appendChild(pictureObj.element);
   });
 
   // Отображает блок с фильтрами.

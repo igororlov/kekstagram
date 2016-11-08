@@ -15,10 +15,12 @@ Gallery.prototype.setPictures = function(pictures) {
 Gallery.prototype.show = function(index) {
   // Добавить обработчики
   var self = this;
-  this.overlayCloseElement.onclick = function() {
+  this.overlayCloseElement.onclick = function(evt) {
+    evt.preventDefault();
     self.hide();
   };
-  this.overlayImageElement.onclick = function() {
+  this.overlayImageElement.onclick = function(evt) {
+    evt.preventDefault();
     var nextPictureIndex = (self.activePicture < self.pictures.length - 1) ? self.activePicture + 1 : 0;
     self.setActivePicture(nextPictureIndex);
   };
