@@ -36,13 +36,13 @@ var Picture = function(data, index) {
   };
   // Обработчик клика - показать изображение
   this.element.onclick = function(evt) {
-    self.handleClick(evt, index);
+    evt.preventDefault();
+    self.handleClick(index);
   };
   this.pictureImage.src = data.url;
 };
 
-Picture.prototype.handleClick = function(evt, index) {
-  evt.preventDefault();
+Picture.prototype.handleClick = function(index) {
   gallery.show(index);
   return false;
 };
