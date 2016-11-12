@@ -3,12 +3,16 @@
 var filterToParams = function(filterObj) {
   var params = [];
   for (var key in filterObj) {
-    params.push(key + '=' + filterObj[key]);
+    if (filterObj.hasOwnProperty(key) && typeof filterObj[key] !== 'undefined' && filterObj[key] !== null) {
+      params.push(key + '=' + filterObj[key]);
+    }
   }
   return '?' + params.join('&');
 };
 
 var load = function(url, filterObj, callback) {
+  console.log('in load, filterObj', filterObj);
+
   var xhr = new XMLHttpRequest();
   var fullUrl = url + filterToParams(filterObj);
 
