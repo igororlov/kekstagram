@@ -1,4 +1,3 @@
-/* global Resizer: true */
 /* global Cookies: true */
 
 /**
