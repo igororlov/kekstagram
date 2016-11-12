@@ -8,6 +8,8 @@
 
 'use strict';
 
+var Resizer = require('./resizer');
+
 /** @enum {string} */
 var FileType = {
   'GIF': '',
@@ -75,8 +77,14 @@ var resizeForwardBtn = document.getElementById('resize-fwd');
 /*
 * Обновляет атрибут disabled у кнопки отправки формы в зависимости от её валидности.
 */
-function toggleResizeFormSubmit() {
+function onFormFieldInput() {
+  // Проверить видимость resizeForwardBtn
   resizeForwardBtn.disabled = !resizeFormIsValid();
+  // Обновить resizer
+  var resizeX = 1 * resizeInputX.value;
+  var resizeY = 1 * resizeInputY.value;
+  var resizeSize = 1 * resizeInputSize.value;
+  currentResizer.setConstraint(resizeX, resizeY, resizeSize);
 }
 
 
@@ -134,9 +142,9 @@ var resizeInputX = resizeForm.elements.x;
 var resizeInputY = resizeForm.elements.y;
 var resizeInputSize = resizeForm.elements.size;
 
-resizeInputX.oninput = toggleResizeFormSubmit;
-resizeInputY.oninput = toggleResizeFormSubmit;
-resizeInputSize.oninput = toggleResizeFormSubmit;
+resizeInputX.addEventListener('input', onFormFieldInput);
+resizeInputY.addEventListener('input', onFormFieldInput);
+resizeInputSize.addEventListener('input', onFormFieldInput);
 
 /**
  * @param {Action} action
@@ -174,7 +182,7 @@ var hideMessage = function() {
  * и показывается форма кадрирования.
  * @param {Event} evt
  */
-uploadForm.onchange = function(evt) {
+uploadForm.addEventListener('change', function(evt) {
   var element = evt.target;
   if (element.id === 'upload-file') {
     // Проверка типа загружаемого файла, тип должен быть изображением
@@ -184,7 +192,7 @@ uploadForm.onchange = function(evt) {
 
       showMessage(Action.UPLOADING);
 
-      fileReader.onload = function() {
+      fileReader.addEventListener('load', function() {
         cleanupResizer();
 
         currentResizer = new Resizer(fileReader.result);
@@ -195,7 +203,8 @@ uploadForm.onchange = function(evt) {
         resizeForm.classList.remove('invisible');
 
         hideMessage();
-      };
+        syncResizerAndForm();
+      });
 
       fileReader.readAsDataURL(element.files[0]);
     } else {
@@ -203,14 +212,14 @@ uploadForm.onchange = function(evt) {
       showMessage(Action.ERROR);
     }
   }
-};
+});
 
 /**
  * Обработка сброса формы кадрирования. Возвращает в начальное состояние
  * и обновляет фон.
  * @param {Event} evt
  */
-resizeForm.onreset = function(evt) {
+resizeForm.addEventListener('reset', function(evt) {
   evt.preventDefault();
 
   cleanupResizer();
@@ -218,14 +227,14 @@ resizeForm.onreset = function(evt) {
 
   resizeForm.classList.add('invisible');
   uploadForm.classList.remove('invisible');
-};
+});
 
 /**
  * Обработка отправки формы кадрирования. Если форма валидна, экспортирует
  * кропнутое изображение в форму добавления фильтра и показывает ее.
  * @param {Event} evt
  */
-resizeForm.onsubmit = function(evt) {
+resizeForm.addEventListener('submit', function(evt) {
   evt.preventDefault();
 
   if (resizeFormIsValid()) {
@@ -241,13 +250,13 @@ resizeForm.onsubmit = function(evt) {
     resizeForm.classList.add('invisible');
     filterForm.classList.remove('invisible');
   }
-};
+});
 
 /**
  * Сброс формы фильтра. Показывает форму кадрирования.
  * @param {Event} evt
  */
-filterForm.onreset = function(evt) {
+filterForm.addEventListener('reset', function(evt) {
   evt.preventDefault();
 
   var selectedFilter = Cookies.get('upload-filter');
@@ -257,14 +266,14 @@ filterForm.onreset = function(evt) {
 
   filterForm.classList.add('invisible');
   resizeForm.classList.remove('invisible');
-};
+});
 
 /**
  * Отправка формы фильтра. Возвращает в начальное состояние, предварительно
  * записав сохраненный фильтр в cookie.
  * @param {Event} evt
  */
-filterForm.onsubmit = function(evt) {
+filterForm.addEventListener('submit', function(evt) {
   evt.preventDefault();
 
   var selectedFilter = getSelectedFilter();
@@ -275,7 +284,7 @@ filterForm.onsubmit = function(evt) {
 
   filterForm.classList.add('invisible');
   uploadForm.classList.remove('invisible');
-};
+});
 
 function getDaysSinceGraceHoppersBirthday() {
   var currentYear = new Date().getFullYear();
@@ -295,7 +304,7 @@ function getDaysSinceGraceHoppersBirthday() {
  * Обработчик изменения фильтра. Добавляет класс из filterMap соответствующий
  * выбранному значению в форме.
  */
-filterForm.onchange = function() {
+filterForm.addEventListener('change', function() {
   if (!filterMap) {
     // Ленивая инициализация. Объект не создается до тех пор, пока
     // не понадобится прочитать его в первый раз, а после этого запоминается
@@ -314,7 +323,7 @@ filterForm.onchange = function() {
   // убрать предыдущий примененный класс. Для этого нужно или запоминать его
   // состояние или просто перезаписывать.
   filterImage.className = 'filter-image-preview ' + filterMap[selectedFilter];
-};
+});
 
 function getSelectedFilter() {
   var selectedFilter = [].filter.call(filterForm['upload-filter'], function(item) {
@@ -322,6 +331,21 @@ function getSelectedFilter() {
   })[0].value;
   return selectedFilter;
 }
+
+
+
+function syncResizerAndForm() {
+  var constraint = currentResizer.getConstraint();
+  if (constraint === null) {
+    return;
+  }
+  resizeInputX.value = constraint.x;
+  resizeInputY.value = constraint.y;
+  resizeInputSize.value = constraint.side;
+}
+
+window.addEventListener('resizerchange', syncResizerAndForm);
+
 
 function initUpload() {
   cleanupResizer();
