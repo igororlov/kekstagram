@@ -260,6 +260,7 @@ filterForm.addEventListener('reset', function(evt) {
 
   var selectedFilter = Cookies.get('upload-filter');
   if (selectedFilter) {
+    verifyFilterMapExists();
     filterImage.className = 'filter-image-preview ' + filterMap[selectedFilter];
   }
 
@@ -299,15 +300,11 @@ function getDaysSinceGraceHoppersBirthday() {
   return Math.floor((today - birthday) / 86400000) + 1;
 }
 
-/**
- * Обработчик изменения фильтра. Добавляет класс из filterMap соответствующий
- * выбранному значению в форме.
- */
-filterForm.addEventListener('change', function() {
+// Ленивая инициализация. Объект не создается до тех пор, пока
+// не понадобится прочитать его в первый раз, а после этого запоминается
+// навсегда.
+function verifyFilterMapExists() {
   if (!filterMap) {
-    // Ленивая инициализация. Объект не создается до тех пор, пока
-    // не понадобится прочитать его в первый раз, а после этого запоминается
-    // навсегда.
     filterMap = {
       'none': 'filter-none',
       'chrome': 'filter-chrome',
@@ -315,6 +312,14 @@ filterForm.addEventListener('change', function() {
       'marvin': 'filter-marvin'
     };
   }
+}
+
+/**
+ * Обработчик изменения фильтра. Добавляет класс из filterMap соответствующий
+ * выбранному значению в форме.
+ */
+filterForm.addEventListener('change', function() {
+  verifyFilterMapExists();
 
   var selectedFilter = getSelectedFilter();
 
