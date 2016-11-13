@@ -181,7 +181,21 @@ var hideMessage = function() {
  * и показывается форма кадрирования.
  * @param {Event} evt
  */
-uploadForm.addEventListener('change', function(evt) {
+function onFileLoad() {
+  cleanupResizer();
+
+  currentResizer = new Resizer(this.result);
+  currentResizer.setElement(resizeForm);
+  uploadMessage.classList.add('invisible');
+
+  uploadForm.classList.add('invisible');
+  resizeForm.classList.remove('invisible');
+
+  hideMessage();
+  syncResizerAndForm();
+}
+
+function onUploadFormChange(evt) {
   var element = evt.target;
   if (element.id === 'upload-file') {
     // Проверка типа загружаемого файла, тип должен быть изображением
@@ -191,19 +205,7 @@ uploadForm.addEventListener('change', function(evt) {
 
       showMessage(Action.UPLOADING);
 
-      fileReader.addEventListener('load', function() {
-        cleanupResizer();
-
-        currentResizer = new Resizer(fileReader.result);
-        currentResizer.setElement(resizeForm);
-        uploadMessage.classList.add('invisible');
-
-        uploadForm.classList.add('invisible');
-        resizeForm.classList.remove('invisible');
-
-        hideMessage();
-        syncResizerAndForm();
-      });
+      fileReader.addEventListener('load', onFileLoad);
 
       fileReader.readAsDataURL(element.files[0]);
     } else {
@@ -211,14 +213,16 @@ uploadForm.addEventListener('change', function(evt) {
       showMessage(Action.ERROR);
     }
   }
-});
+}
+
+uploadForm.addEventListener('change', onUploadFormChange);
 
 /**
  * Обработка сброса формы кадрирования. Возвращает в начальное состояние
  * и обновляет фон.
  * @param {Event} evt
  */
-resizeForm.addEventListener('reset', function(evt) {
+function onResizeFormReset(evt) {
   evt.preventDefault();
 
   cleanupResizer();
@@ -226,14 +230,15 @@ resizeForm.addEventListener('reset', function(evt) {
 
   resizeForm.classList.add('invisible');
   uploadForm.classList.remove('invisible');
-});
+}
+resizeForm.addEventListener('reset', onResizeFormReset);
 
 /**
  * Обработка отправки формы кадрирования. Если форма валидна, экспортирует
  * кропнутое изображение в форму добавления фильтра и показывает ее.
  * @param {Event} evt
  */
-resizeForm.addEventListener('submit', function(evt) {
+function onResizeFormSubmit(evt) {
   evt.preventDefault();
 
   if (resizeFormIsValid()) {
@@ -249,13 +254,14 @@ resizeForm.addEventListener('submit', function(evt) {
     resizeForm.classList.add('invisible');
     filterForm.classList.remove('invisible');
   }
-});
+}
+resizeForm.addEventListener('submit', onResizeFormSubmit);
 
 /**
  * Сброс формы фильтра. Показывает форму кадрирования.
  * @param {Event} evt
  */
-filterForm.addEventListener('reset', function(evt) {
+function onFilterFormReset(evt) {
   evt.preventDefault();
 
   var selectedFilter = Cookies.get('upload-filter');
@@ -266,14 +272,15 @@ filterForm.addEventListener('reset', function(evt) {
 
   filterForm.classList.add('invisible');
   resizeForm.classList.remove('invisible');
-});
+}
+filterForm.addEventListener('reset', onFilterFormReset);
 
 /**
  * Отправка формы фильтра. Возвращает в начальное состояние, предварительно
  * записав сохраненный фильтр в cookie.
  * @param {Event} evt
  */
-filterForm.addEventListener('submit', function(evt) {
+function onFilterFormSubmit(evt) {
   evt.preventDefault();
 
   var selectedFilter = getSelectedFilter();
@@ -284,7 +291,8 @@ filterForm.addEventListener('submit', function(evt) {
 
   filterForm.classList.add('invisible');
   uploadForm.classList.remove('invisible');
-});
+}
+filterForm.addEventListener('submit', onFilterFormSubmit);
 
 function getDaysSinceGraceHoppersBirthday() {
   var currentYear = new Date().getFullYear();
@@ -318,7 +326,7 @@ function verifyFilterMapExists() {
  * Обработчик изменения фильтра. Добавляет класс из filterMap соответствующий
  * выбранному значению в форме.
  */
-filterForm.addEventListener('change', function() {
+function onFilterFormChange() {
   verifyFilterMapExists();
 
   var selectedFilter = getSelectedFilter();
@@ -327,7 +335,8 @@ filterForm.addEventListener('change', function() {
   // убрать предыдущий примененный класс. Для этого нужно или запоминать его
   // состояние или просто перезаписывать.
   filterImage.className = 'filter-image-preview ' + filterMap[selectedFilter];
-});
+}
+filterForm.addEventListener('change', onFilterFormChange);
 
 function getSelectedFilter() {
   var selectedFilter = [].filter.call(filterForm['upload-filter'], function(item) {
@@ -336,8 +345,9 @@ function getSelectedFilter() {
   return selectedFilter;
 }
 
-
-
+/**
+ * Синхронизировать поля формы с параметрами ресайзера при изменении.
+ */
 function syncResizerAndForm() {
   var constraint = currentResizer.getConstraint();
   if (constraint === null) {
@@ -347,7 +357,6 @@ function syncResizerAndForm() {
   resizeInputY.value = constraint.y;
   resizeInputSize.value = constraint.side;
 }
-
 window.addEventListener('resizerchange', syncResizerAndForm);
 
 
