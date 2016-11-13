@@ -12,6 +12,15 @@ Gallery.prototype.setPictures = function(pictures) {
   this.pictures = pictures;
 };
 
+Gallery.prototype.appendPictures = function(pictures) {
+  this.pictures = this.pictures.concat(pictures);
+};
+
+Gallery.prototype.reset = function() {
+  this.pictures = [];
+  this.activePicture = 0;
+};
+
 Gallery.prototype.show = function(index) {
   // Добавить обработчики
   var self = this;
