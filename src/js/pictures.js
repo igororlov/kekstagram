@@ -9,21 +9,24 @@ var Picture = require('./picture');
 var gallery = require('./gallery');
 var load = require('./load');
 
+var PICTURES_URL = 'http://localhost:1507/api/pictures';
+var PAGE_SIZE = 12;
+var THROTTLE_DELAY = 100;
+var GAP = 100;
+
 var filters = document.querySelector('.filters');
 var picturesBlock = document.querySelector('.pictures');
 
-var PAGE_SIZE = 12;
 var pageNumber = 0;
+var currentFilterID = 'filter-popular';
+var lastThrottleCall = Date.now();
 
-var THROTTLE_DELAY = 100;
 
-var GAP = 100;
-
-var isBottomReached = function() {
+function isBottomReached() {
   var footerElement = document.querySelector('footer');
   var footerPosition = footerElement.getBoundingClientRect();
   return footerPosition.top - window.innerHeight - GAP <= 0;
-};
+}
 
 function clearContent(element) {
   var child = element.firstChild;
@@ -33,31 +36,35 @@ function clearContent(element) {
   }
 }
 
-var currentFilterID = 'filter-popular';
-filters.addEventListener('change', function(evt) {
+function onFilterChange(evt) {
   clearContent(picturesBlock);
   pageNumber = 0;
   currentFilterID = evt.target.id;
   gallery.reset();
   loadAndRenderNextBlock();
-}, true); // Захват на capture phase
+}
 
-var setScrollEnabled = function() {
-  var lastCall = Date.now();
-  window.addEventListener('scroll', function() {
-    if (Date.now() - lastCall >= THROTTLE_DELAY) {
-      if (isBottomReached()) {
-        loadAndRenderNextBlock();
-      }
-      lastCall = Date.now();
+// Захват на capture phase
+filters.addEventListener('change', onFilterChange, true);
+
+function onScroll() {
+  if (Date.now() - lastThrottleCall >= THROTTLE_DELAY) {
+    if (isBottomReached()) {
+      loadAndRenderNextBlock();
     }
-  });
-};
+    lastThrottleCall = Date.now();
+  }
+}
+
+function setScrollEnabled() {
+  lastThrottleCall = Date.now();
+  window.addEventListener('scroll', onScroll);
+}
 
 function loadAndRenderNextBlock() {
   var from = pageNumber * PAGE_SIZE;
   var to = from + PAGE_SIZE;
-  load('http://localhost:1507/api/pictures', { from: from, to: to, filter: currentFilterID }, renderPicturesList);
+  load(PICTURES_URL, { from: from, to: to, filter: currentFilterID }, renderPicturesList);
   pageNumber++;
 }
 

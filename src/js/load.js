@@ -11,8 +11,6 @@ var filterToParams = function(filterObj) {
 };
 
 var load = function(url, filterObj, callback) {
-  console.log('in load, filterObj', filterObj);
-
   var xhr = new XMLHttpRequest();
   var fullUrl = url + filterToParams(filterObj);
 
