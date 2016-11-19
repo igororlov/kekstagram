@@ -9,6 +9,7 @@ var Picture = require('./picture');
 var gallery = require('./gallery');
 var load = require('./load');
 
+var LOCALSTORAGE_ITEM_FILTER = 'currentFilter';
 var PICTURES_URL = 'http://localhost:1507/api/pictures';
 var PAGE_SIZE = 12;
 var THROTTLE_DELAY = 100;
@@ -18,7 +19,7 @@ var filters = document.querySelector('.filters');
 var picturesBlock = document.querySelector('.pictures');
 
 var pageNumber = 0;
-var currentFilterID = 'filter-popular';
+var currentFilterID = localStorage.getItem(LOCALSTORAGE_ITEM_FILTER) || 'filter-popular';
 var lastThrottleCall = Date.now();
 
 
@@ -40,6 +41,7 @@ function onFilterChange(evt) {
   clearContent(picturesBlock);
   pageNumber = 0;
   currentFilterID = evt.target.id;
+  localStorage.setItem(LOCALSTORAGE_ITEM_FILTER, currentFilterID);
   gallery.reset();
   loadAndRenderNextBlock();
 }
@@ -59,6 +61,13 @@ function onScroll() {
 function setScrollEnabled() {
   lastThrottleCall = Date.now();
   window.addEventListener('scroll', onScroll);
+}
+
+/**
+ * Сделать активным кнопку с текущим фильтром (при инициализации).
+ */
+function chooseActiveFilter() {
+  filters[currentFilterID].checked = true;
 }
 
 function loadAndRenderNextBlock() {
@@ -90,6 +99,7 @@ function renderPicturesList(data) {
 
 function initPictures() {
   setScrollEnabled();
+  chooseActiveFilter();
   loadAndRenderNextBlock();
 }
 
