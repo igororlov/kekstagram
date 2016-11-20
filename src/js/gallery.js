@@ -8,49 +8,59 @@ var Gallery = function() {
   this.overlayImageElement = this.overlayElement.querySelector('.gallery-overlay-image');
 };
 
-Gallery.prototype.setPictures = function(pictures) {
-  this.pictures = pictures;
-};
+Gallery.prototype = {
+  setPictures: function(pictures) {
+    this.pictures = pictures;
+  },
 
-Gallery.prototype.appendPictures = function(pictures) {
-  this.pictures = this.pictures.concat(pictures);
-};
+  appendPictures: function(pictures) {
+    this.pictures = this.pictures.concat(pictures);
+  },
 
-Gallery.prototype.reset = function() {
-  this.pictures = [];
-  this.activePicture = 0;
-};
+  reset: function() {
+    this.pictures = [];
+    this.activePicture = 0;
+  },
 
-Gallery.prototype.show = function(index) {
-  // Добавить обработчики
-  var self = this;
-  this.overlayCloseElement.onclick = function(evt) {
+  show: function(index) {
+    // Обработчик закрытия
+    this.onCloseClick = this.onCloseClick.bind(this);
+    this.overlayCloseElement.addEventListener('click', this.onCloseClick);
+
+    // Обработчик клика по изображению
+    this.onImageClick = this.onImageClick.bind(this);
+    this.overlayImageElement.addEventListener('click', this.onImageClick);
+
+    // Показать фотогалерею и вызвать setActivePicture
+    this.overlayElement.classList.remove('invisible');
+    this.setActivePicture(index);
+  },
+
+  onCloseClick: function(evt) {
     evt.preventDefault();
-    self.hide();
-  };
-  this.overlayImageElement.onclick = function(evt) {
+    this.hide();
+  },
+
+  onImageClick: function(evt) {
     evt.preventDefault();
-    var nextPictureIndex = (self.activePicture < self.pictures.length - 1) ? self.activePicture + 1 : 0;
-    self.setActivePicture(nextPictureIndex);
-  };
-  // Показать фотогалерею и вызвать setActivePicture
-  this.overlayElement.classList.remove('invisible');
-  this.setActivePicture(index);
-};
+    var nextPictureIndex = (this.activePicture < this.pictures.length - 1) ? this.activePicture + 1 : 0;
+    this.setActivePicture(nextPictureIndex);
+  },
 
-Gallery.prototype.hide = function() {
-  this.overlayElement.classList.add('invisible');
-  // Обнулить обработчики
-  this.overlayCloseElement.onclick = null;
-  this.overlayImageElement.onclick = null;
-};
+  hide: function() {
+    this.overlayElement.classList.add('invisible');
+    // Обнулить обработчики
+    this.overlayCloseElement.removeEventListener('click', this.onCloseClick);
+    this.overlayImageElement.removeEventListener('click', this.onImageClick);
+  },
 
-Gallery.prototype.setActivePicture = function(index) {
-  this.activePicture = index;
-  var picture = this.pictures[index];
-  this.overlayImageElement.src = picture.url;
-  this.overlayElement.querySelector('.likes-count').textContent = picture.likes;
-  this.overlayElement.querySelector('.comments-count').textContent = picture.comments;
+  setActivePicture: function(index) {
+    this.activePicture = index;
+    var picture = this.pictures[index];
+    this.overlayImageElement.src = picture.url;
+    this.overlayElement.querySelector('.likes-count').textContent = picture.likes;
+    this.overlayElement.querySelector('.comments-count').textContent = picture.comments;
+  }
 };
 
 module.exports = new Gallery();
