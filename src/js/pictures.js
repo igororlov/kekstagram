@@ -48,13 +48,16 @@ function onFilterChange(evt) {
 // Захват на capture phase
 filters.addEventListener('change', onFilterChange, true);
 
+function onWindowScroll() {
+  Utils.throttle(function() {
+    if (isBottomReached()) {
+      loadAndRenderNextBlock();
+    }
+  }, THROTTLE_DELAY)();
+}
+
 function setScrollEnabled() {
-  window.addEventListener('scroll',
-    Utils.throttle(function() {
-      if (isBottomReached()) {
-        loadAndRenderNextBlock();
-      }
-    }, THROTTLE_DELAY));
+  window.addEventListener('scroll', onWindowScroll);
 }
 
 /**
@@ -72,13 +75,15 @@ function loadAndRenderNextBlock() {
 }
 
 function renderPicturesList(data) {
+  var indexFrom = gallery.pictures.length;
   gallery.appendPictures(data);
 
   // Прячет блок с фильтрами .filters, добавляя ему класс hidden
   filters.classList.add('hidden');
 
   data.forEach(function(picture, index) {
-    var pictureObj = new Picture(picture, index);
+    var pictureIndex = indexFrom + index;
+    var pictureObj = new Picture(picture, pictureIndex);
     picturesBlock.appendChild(pictureObj.element);
   });
 
