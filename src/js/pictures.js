@@ -8,6 +8,7 @@
 var Picture = require('./picture');
 var gallery = require('./gallery');
 var load = require('./load');
+var Utils = require('./utils');
 
 var LOCALSTORAGE_ITEM_FILTER = 'currentFilter';
 var PICTURES_URL = 'http://localhost:1507/api/pictures';
@@ -20,8 +21,6 @@ var picturesBlock = document.querySelector('.pictures');
 
 var pageNumber = 0;
 var currentFilterID = localStorage.getItem(LOCALSTORAGE_ITEM_FILTER) || 'filter-popular';
-var lastThrottleCall = Date.now();
-
 
 function isBottomReached() {
   var footerElement = document.querySelector('footer');
@@ -49,18 +48,13 @@ function onFilterChange(evt) {
 // Захват на capture phase
 filters.addEventListener('change', onFilterChange, true);
 
-function onScroll() {
-  if (Date.now() - lastThrottleCall >= THROTTLE_DELAY) {
-    if (isBottomReached()) {
-      loadAndRenderNextBlock();
-    }
-    lastThrottleCall = Date.now();
-  }
-}
-
 function setScrollEnabled() {
-  lastThrottleCall = Date.now();
-  window.addEventListener('scroll', onScroll);
+  window.addEventListener('scroll',
+    Utils.throttle(function() {
+      if (isBottomReached()) {
+        loadAndRenderNextBlock();
+      }
+    }, THROTTLE_DELAY));
 }
 
 /**
