@@ -75,7 +75,7 @@ function loadAndRenderNextBlock() {
 }
 
 function renderPicturesList(data) {
-  var indexFrom = gallery.pictures.length;
+  var indexFrom = gallery.getNextAvailableIndex();
   gallery.appendPictures(data);
 
   // Прячет блок с фильтрами .filters, добавляя ему класс hidden
@@ -94,7 +94,18 @@ function renderPicturesList(data) {
   if (isBottomReached() && data.length > 0) {
     loadAndRenderNextBlock();
   }
+
+  onWindowHashChange();
 }
+
+function onWindowHashChange() {
+  var matchResult = location.hash.match(/#photo\/(\S+)/);
+  if (matchResult !== null) {
+    gallery.show(matchResult[1]);
+  }
+}
+
+window.addEventListener('hashchange', onWindowHashChange);
 
 function initPictures() {
   setScrollEnabled();
