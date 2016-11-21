@@ -5,8 +5,6 @@
 
 'use strict';
 
-var gallery = require('./gallery');
-
 var pictureTemplate = document.getElementById('picture-template');
 var templateContainer = 'content' in pictureTemplate ? pictureTemplate.content : pictureTemplate;
 
@@ -53,7 +51,7 @@ Picture.prototype = {
 
   handleClick: function(evt) {
     evt.preventDefault();
-    gallery.show(this.index);
+    window.location.hash = 'photo/' + this.data.url;
     return false;
   },
 

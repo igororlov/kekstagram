@@ -17,6 +17,10 @@ Gallery.prototype = {
     this.pictures = this.pictures.concat(pictures);
   },
 
+  getNextAvailableIndex: function() {
+    return this.pictures.length;
+  },
+
   reset: function() {
     this.pictures = [];
     this.activePicture = 0;
@@ -39,12 +43,13 @@ Gallery.prototype = {
   onCloseClick: function(evt) {
     evt.preventDefault();
     this.hide();
+    window.location.hash = '';
   },
 
   onImageClick: function(evt) {
     evt.preventDefault();
     var nextPictureIndex = (this.activePicture < this.pictures.length - 1) ? this.activePicture + 1 : 0;
-    this.setActivePicture(nextPictureIndex);
+    window.location.hash = 'photo/' + this.pictures[nextPictureIndex].url;
   },
 
   hide: function() {
@@ -55,6 +60,11 @@ Gallery.prototype = {
   },
 
   setActivePicture: function(index) {
+    if (typeof index === 'string') {
+      index = this.pictures.findIndex(function(pic) {
+        return pic.url === index;
+      });
+    }
     this.activePicture = index;
     var picture = this.pictures[index];
     this.overlayImageElement.src = picture.url;
